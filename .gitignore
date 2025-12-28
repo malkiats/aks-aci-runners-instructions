@@ -1,0 +1,9 @@
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+secret.auto.tfvars
+override.tf
+override.tf.json
+*.backup
