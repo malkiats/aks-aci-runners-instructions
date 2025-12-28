@@ -7,21 +7,23 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   node_resource_group = local.node_resource_group
 
   default_node_pool {
-    name                = "systempool"
-    node_count          = 1
-    vm_size             = "Standard_D2_v2"
+    name                 = "systempool"
+    vm_size              = "Standard_D2_v2"
     orchestrator_version = data.azurerm_kubernetes_service_versions.current.latest_version
-    max_count           = 3
-    min_count           = 0
-    enable_auto_scaling = true
-    os_disk_size_gb     = 30
-    type                = "VirtualMachineScaleSets"
+
+    min_count            = 1
+    max_count            = 3
+
+    os_disk_size_gb = 30
+    type            = "VirtualMachineScaleSets"
+
     node_labels = {
-      nodepool-type = "system"
-      environment   = var.environment
-      nodepools     = "linux"
-      app           = "system-apps"
+      "nodepool-type" = "system"
+      environment     = var.environment
+      nodepools       = "linux"
+      app             = "system-apps"
     }
+
     tags = local.common_tags
   }
 
@@ -34,17 +36,12 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     log_analytics_workspace_id = azurerm_log_analytics_workspace.insights.id
   }
 
-  # RBAC & Azure AD Integration
-  role_based_access_control {
-    enabled = true
+  # Enable RBAC and configure Azure AD admin group via the provider-supported block
+  role_based_access_control_enabled = true
 
-    # NOTE:
-    # Depending on the azurerm provider version, this block's nested attributes differ.
-    # For provider v3.x, use azure_active_directory as shown here.
-    azure_active_directory {
-      managed                = true
-      admin_group_object_ids = [azuread_group.aks_administrators.object_id]
-    }
+  azure_active_directory_role_based_access_control {
+    admin_group_object_ids = [azuread_group.aks_administrators.object_id]
+    # tenant_id or azure_rbac_enabled can be added here if needed
   }
 
   # Windows Profile - do not hardcode passwords in VCS. Provide via tfvars or CI secret.

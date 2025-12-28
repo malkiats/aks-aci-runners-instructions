@@ -1,6 +1,0 @@
-location                = "centralindia"
-resource_group_base_name = "dind-runner-rg"
-environment             = "dev"
-aks_cluster_name        = "aks-cluster"
-# DO NOT store secrets here in public repos; use your CI secret store
-# windows_admin_password = "..." 

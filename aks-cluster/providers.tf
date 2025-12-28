@@ -1,6 +1,5 @@
 provider "azurerm" {
-  features = {}
-  # Recommended: pin provider version in required_providers (see terraform block)
+    features {}
 }
 
 provider "azuread" {
